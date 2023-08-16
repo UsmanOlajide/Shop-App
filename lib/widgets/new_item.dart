@@ -44,7 +44,8 @@ class _NewItemState extends State<NewItem> {
     // and checks my condition there if it is true or false
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final url = Uri.https(
+      //POST_____________________
+      final url = Uri.https
         'flutter-prep-1816d-default-rtdb.firebaseio.com',
         'shopping-list.json',
       );
@@ -56,6 +57,7 @@ class _NewItemState extends State<NewItem> {
           'quantity': _enteredQuantity,
           'category': _selectedCategory.catTitle,
         }),
+        //------------------------
       );
       // Navigator.of(context).pop(
       //   GroceryItem(

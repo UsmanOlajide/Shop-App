@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/widgets/grocery_list.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -28,3 +27,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+//* MAIN BRANCH
