@@ -45,28 +45,20 @@ class _NewItemState extends State<NewItem> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       //POST_____________________
-      final url = Uri.https
-        'flutter-prep-1816d-default-rtdb.firebaseio.com',
-        'shopping-list.json',
-      );
+      final url = Uri.https('flutter-prep-1816d-default-rtdb.firebaseio.com',
+          'shopping-list.json');
       http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'name': _enteredName,
-          'quantity': _enteredQuantity,
-          'category': _selectedCategory.catTitle,
-        }),
-        //------------------------
+        headers: {'Content-type': 'application/json'},
+        body: json.encode(
+          {
+            'name': _enteredName,
+            'quantity': _enteredQuantity,
+            'category': _selectedCategory.catTitle,
+          },
+        ),
       );
-      // Navigator.of(context).pop(
-      //   GroceryItem(
-      //     id: DateTime.now().toIso8601String(),
-      //     name: _enteredName,
-      //     quantity: _enteredQuantity,
-      //     category: _selectedCategory,
-      //   ),
-      // );
+      //-------------------------
     }
 
     // _formKey.currentState!.validate();
