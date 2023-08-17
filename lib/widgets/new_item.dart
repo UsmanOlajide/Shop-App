@@ -39,7 +39,7 @@ class _NewItemState extends State<NewItem> {
   //   super.dispose();
   // }
 
-  void _addGroceryItem() {
+  void _addGroceryItem() async {
     // I think when validate runs, it acts on the validation method in the form field
     // and checks my condition there if it is true or false
     if (_formKey.currentState!.validate()) {
@@ -47,7 +47,7 @@ class _NewItemState extends State<NewItem> {
       //POST_____________________
       final url = Uri.https('flutter-prep-1816d-default-rtdb.firebaseio.com',
           'shopping-list.json');
-      http.post(
+      await http.post(
         url,
         headers: {'Content-type': 'application/json'},
         body: json.encode(
@@ -59,6 +59,10 @@ class _NewItemState extends State<NewItem> {
         ),
       );
       //-------------------------
+    }
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
     }
 
     // _formKey.currentState!.validate();
