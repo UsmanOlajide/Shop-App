@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:shop_app/data/categories.dart';
-import 'package:shop_app/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -39,17 +38,17 @@ class _NewItemState extends State<NewItem> {
   //   super.dispose();
   // }
 
-  void _addGroceryItem() {
+  void _addGroceryItem() async {
     // I think when validate runs, it acts on the validation method in the form field
     // and checks my condition there if it is true or false
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       //POST_____________________
-      final url = Uri.https
+      final url = Uri.https(
         'flutter-prep-1816d-default-rtdb.firebaseio.com',
         'shopping-list.json',
       );
-      http.post(
+      await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -59,17 +58,17 @@ class _NewItemState extends State<NewItem> {
         }),
         //------------------------
       );
-      // Navigator.of(context).pop(
-      //   GroceryItem(
-      //     id: DateTime.now().toIso8601String(),
-      //     name: _enteredName,
-      //     quantity: _enteredQuantity,
-      //     category: _selectedCategory,
-      //   ),
-      // );
-    }
 
-    // _formKey.currentState!.validate();
+      // print(response.body);
+      // print(response.statusCode);
+
+      if (context.mounted) Navigator.of(context).pop();
+
+      // if (!context.mounted) {
+      //   return;
+      // }
+      // Navigator.of(context).pop();
+    }
   }
 
   @override
