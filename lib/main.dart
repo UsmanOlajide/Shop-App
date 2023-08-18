@@ -31,9 +31,6 @@ class MyApp extends StatelessWidget {
 //* TESTING BRANCH
 
 //* Last Activity ::
-//* Fetching Data from Firebase
+//* Handling Errors ✅
 
 //* Todo Activity ::
-//* Avoid unnecessary requests ✅
-//* Managing the loading state ✅
-//* Handling Errors 
