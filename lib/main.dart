@@ -29,3 +29,11 @@ class MyApp extends StatelessWidget {
 }
 
 //* MAIN BRANCH
+
+//* Todo :
+//* Since we already have the rest of the data in newitem widget, and it's after send data to Firebase I 
+//* get the id
+//* I can create the grocery item and add all the data and the id once it's available
+//* So that in grocerylist screen I dont have to load the items
+//* I just get the updated grocery item 
+//* and add it to my local list and update the ui

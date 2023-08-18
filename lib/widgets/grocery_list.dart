@@ -17,30 +17,32 @@ class GroceryList extends StatefulWidget {
 
 class _GroceryListState extends State<GroceryList> {
   List<GroceryItem> _groceryItems = [];
+  var _loading = true;
+  String? _error;
 
-//to fetch the data when my app runs for the first time
   @override
   void initState() {
     super.initState();
     _loadItems();
   }
 
-// I want to send a get request when I open this screen for the first time
   void _loadItems() async {
-    final url = Uri.https(
-        'flutter-prep-1816d-default-rtdb.firebaseio.com', 'shopping-list.json');
+    final url = Uri.https('flutter-prep-1816d-default-rtdb.firebaseio.com', 'shopping-list.json');
     final response = await http.get(url);
-    // print(response.body);
 
-    // will contain the new parsed objects
+    if (response.statusCode >= 400) {
+      setState(() {
+        _error =
+            'Failed to load. Please make sure you are connected to the internet';
+      });
+    }
+
     final List<GroceryItem> loadedItems = [];
 
-    // to convert json string to normal string
     final Map<String, dynamic> listData = json.decode(response.body);
 
-    // to loop through the listData map
     for (final item in listData.entries) {
-      final newCategory = categories.entries 
+      final newCategory = categories.entries
           .firstWhere(
               (catItem) => catItem.value.catTitle == item.value['category'])
           .value;
@@ -56,16 +58,22 @@ class _GroceryListState extends State<GroceryList> {
 
     setState(() {
       _groceryItems = loadedItems;
+      _loading = false;
     });
   }
 
   void _addItem() async {
-    await Navigator.of(context).push<GroceryItem>(
+    final newItem = await Navigator.of(context).push<GroceryItem>(
       MaterialPageRoute(
         builder: (_) => const NewItem(),
       ),
     );
-    _loadItems();
+
+    if (newItem == null) return;
+
+    setState(() {
+      _groceryItems.add(newItem);
+    });
   }
 
   void _deleteItem(GroceryItem groceryItem) {
@@ -77,6 +85,14 @@ class _GroceryListState extends State<GroceryList> {
   @override
   Widget build(BuildContext context) {
     Widget content = const Center(child: Text('NO ITEMS ADDED YET'));
+
+    if (_loading) {
+    content = const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      content = Center(child: Text(_error!));
+    }
 
     if (_groceryItems.isNotEmpty) {
       content = ListView.builder(
@@ -104,6 +120,8 @@ class _GroceryListState extends State<GroceryList> {
         itemCount: _groceryItems.length,
       );
     }
+
+
 
     return Scaffold(
       appBar: AppBar(
