@@ -24,30 +24,20 @@ class _NewItemState extends State<NewItem> {
   var _enteredName = '';
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   nameController = TextEditingController();
-  //   quantityController = TextEditingController();
-  // }
-
-  // @override
-  // void dispose() {
-  //   nameController;
-  //   quantityController;
-  //   super.dispose();
-  // }
+  var loading = false;
 
   void _addGroceryItem() async {
     // I think when validate runs, it acts on the validation method in the form field
     // and checks my condition there if it is true or false
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      setState(() {
+        loading = true;
+      });
       //POST_____________________
       final url = Uri.https('flutter-prep-1816d-default-rtdb.firebaseio.com',
           'shopping-list.json');
-      await http.post(
+      final response = await http.post(
         url,
         headers: {'Content-type': 'application/json'},
         body: json.encode(
@@ -58,11 +48,20 @@ class _NewItemState extends State<NewItem> {
           },
         ),
       );
+      print(response.body);
       //-------------------------
-    }
+      final Map<String, dynamic> decodedData = json.decode(response.body);
 
-    if (context.mounted) {
-      Navigator.of(context).pop();
+      if (context.mounted) {
+        Navigator.of(context).pop(
+          GroceryItem(
+            id: decodedData['name'],
+            name: _enteredName,
+            quantity: _enteredQuantity,
+            category: _selectedCategory,
+          ),
+        );
+      }
     }
 
     // _formKey.currentState!.validate();
@@ -164,17 +163,26 @@ class _NewItemState extends State<NewItem> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  onPressed: () {
-                    _formKey.currentState!.reset();
-                  },
+                  onPressed: loading
+                      ? null
+                      : () {
+                          _formKey.currentState!.reset();
+                        },
                   child: const Text('Reset'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    // _formKey.currentState!.validate();
-                    _addGroceryItem();
-                  },
-                  child: const Text('Add Item'),
+                  onPressed: loading
+                      ? null
+                      : () {
+                          // _formKey.currentState!.validate();
+                          _addGroceryItem();
+                        },
+                  child: loading
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator())
+                      : const Text('Add Item'),
                 )
                 // ElevatedButton(
                 //   onPressed: () => widget.addGroceryItem(
@@ -195,3 +203,8 @@ class _NewItemState extends State<NewItem> {
     );
   }
 }
+
+
+//* Todo :
+//* There's this slight delay when I press addItem button so I want to replace it with a progress circle
+//* Then I want to disable the buttons while the grocery Item is being added

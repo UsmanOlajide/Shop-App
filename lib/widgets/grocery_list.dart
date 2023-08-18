@@ -17,6 +17,8 @@ class GroceryList extends StatefulWidget {
 
 class _GroceryListState extends State<GroceryList> {
   List<GroceryItem> _groceryItems = [];
+  var loading = true;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -26,9 +28,17 @@ class _GroceryListState extends State<GroceryList> {
 
   void _loadItems() async {
     final url = Uri.https(
+        // 'abc.firebaseio.com', 'shopping-list.json');
         'flutter-prep-1816d-default-rtdb.firebaseio.com', 'shopping-list.json');
 
     final response = await http.get(url);
+
+    if (response.statusCode >= 400) {
+      setState(() {
+        errorMessage =
+            'Failed to load items. Please make sure you\'re connected to the internet and try again';
+      });
+    }
 
     final Map<String, dynamic> decodedData = json.decode(response.body);
 
@@ -53,19 +63,24 @@ class _GroceryListState extends State<GroceryList> {
     }
     setState(() {
       _groceryItems = newList;
+      loading = false;
     });
   }
 
   void _addItem() async {
-    // push returns a Future that holds the data that might be returned by the screen which I pushed to.
-    // newItem is null because we might not return anything from that screen
-    await Navigator.of(context).push<GroceryItem>(
+    final response = await Navigator.of(context).push<GroceryItem>(
       MaterialPageRoute(
         builder: (_) => const NewItem(),
       ),
     );
 
-    _loadItems();
+    if (response == null) return;
+
+    setState(() {
+      _groceryItems.add(response);
+      // loading = true;
+    });
+    // _loadItems();
   }
 
   void _deleteItem(GroceryItem groceryItem) {
@@ -77,6 +92,12 @@ class _GroceryListState extends State<GroceryList> {
   @override
   Widget build(BuildContext context) {
     Widget content = const Center(child: Text('NO ITEMS ADDED YET'));
+
+    if (loading) {
+      content = const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
     if (_groceryItems.isNotEmpty) {
       content = ListView.builder(
@@ -103,6 +124,10 @@ class _GroceryListState extends State<GroceryList> {
         },
         itemCount: _groceryItems.length,
       );
+    }
+
+    if (errorMessage != null) {
+      content = Center(child: Text(errorMessage!));
     }
 
     return Scaffold(
